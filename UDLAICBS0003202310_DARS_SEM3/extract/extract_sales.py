@@ -2,20 +2,23 @@ from distutils.util import execute
 from util.db_connection import Db_Connection
 import pandas as pd
 import traceback
+import configparser
 
+confParam = configparser.ConfigParser()
+confParam.read('conf.properties')
+
+type = confParam ['MySqlParameters']['type']
+host =confParam ['MySqlParameters']['host']
+port = confParam ['MySqlParameters']['port']
+user = confParam ['MySqlParameters']['user']
+pwd = confParam ['MySqlParameters']['pwd']
+dbStg = confParam ['MySqlParameters']['dbStg']
+sales_conf = confParam ['csvs']['sales_csv']
+con_db_stg = Db_Connection(type, host, port, user, pwd, dbStg)
 
 def ext_sales():
     try:
-    #Variables
-        type = 'mysql'
-        host = 'localhost'
-        port = '3306'
-        user = 'root'
-        pwd = '1234'
-        db = 'darsdbstg'
-
-
-        con_db_stg = Db_Connection(type, host, port, user, pwd, db)
+    
         ses_db_stg = con_db_stg.start()
         if ses_db_stg == -1:
             raise Exception (f"The give database type {type} is not valid")
@@ -33,7 +36,7 @@ def ext_sales():
             "amount_sold":[]
         }
         # Reading the CSV file
-        sales_csv = pd.read_csv("csvs/sales.csv")
+        sales_csv = pd.read_csv(sales_conf)
         #print (channel_csv)
         #Processing the CSV file content
         if not sales_csv.empty:

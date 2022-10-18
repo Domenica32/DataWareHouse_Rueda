@@ -2,20 +2,23 @@ from distutils.util import execute
 from util.db_connection import Db_Connection
 import pandas as pd
 import traceback
+import configparser
 
+confParam = configparser.ConfigParser()
+confParam.read('conf.properties')
+
+type = confParam ['MySqlParameters']['type']
+host =confParam ['MySqlParameters']['host']
+port = confParam ['MySqlParameters']['port']
+user = confParam ['MySqlParameters']['user']
+pwd = confParam ['MySqlParameters']['pwd']
+dbStg = confParam ['MySqlParameters']['dbStg']
+promotions_conf = confParam ['csvs']['promotions_csv']
+con_db_stg = Db_Connection(type, host, port, user, pwd, dbStg)
 
 def ext_promo():
     try:
-    #Variables
-        type = 'mysql'
-        host = 'localhost'
-        port = '3306'
-        user = 'root'
-        pwd = '1234'
-        db = 'darsdbstg'
-
-
-        con_db_stg = Db_Connection(type, host, port, user, pwd, db)
+    
         ses_db_stg = con_db_stg.start()
         if ses_db_stg == -1:
             raise Exception (f"The give database type {type} is not valid")
@@ -31,7 +34,7 @@ def ext_promo():
             "promo_end_date":[]
         }
         # Reading the CSV file
-        promo_csv = pd.read_csv("csvs/promotions.csv")
+        promo_csv = pd.read_csv(promotions_conf)
         #print (channel_csv)
         #Processing the CSV file content
         if not promo_csv.empty:

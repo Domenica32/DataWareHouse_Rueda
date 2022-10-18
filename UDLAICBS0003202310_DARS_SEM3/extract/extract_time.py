@@ -4,20 +4,22 @@ from time import time
 from util.db_connection import Db_Connection
 import pandas as pd
 import traceback
+import configparser
 
+confParam = configparser.ConfigParser()
+confParam.read('conf.properties')
+
+type = confParam ['MySqlParameters']['type']
+host =confParam ['MySqlParameters']['host']
+port = confParam ['MySqlParameters']['port']
+user = confParam ['MySqlParameters']['user']
+pwd = confParam ['MySqlParameters']['pwd']
+dbStg = confParam ['MySqlParameters']['dbStg']
+times_conf = confParam ['csvs']['times_csv']
+con_db_stg = Db_Connection(type, host, port, user, pwd, dbStg)
 
 def ext_time():
     try:
-    #Variables
-        type = 'mysql'
-        host = 'localhost'
-        port = '3306'
-        user = 'root'
-        pwd = '1234'
-        db = 'darsdbstg'
-
-
-        con_db_stg = Db_Connection(type, host, port, user, pwd, db)
         ses_db_stg = con_db_stg.start()
         if ses_db_stg == -1:
             raise Exception (f"The give database type {type} is not valid")
@@ -38,7 +40,7 @@ def ext_time():
             "calendar_year":[]
         }
         # Reading the CSV file
-        time_csv = pd.read_csv("csvs/times.csv")
+        time_csv = pd.read_csv(times_conf)
         #print (channel_csv)
         #Processing the CSV file content
         if not time_csv.empty:
