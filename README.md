@@ -33,7 +33,7 @@ Para la extraccion de la infromación se creó un archivo .py para cada una de l
 En la carpeta evidencesSem3 se encuentran las capturas de pantalla de los modelos de las base de datos y el conteo de filas de cada tabla en stg
 
 
-# Diagra de modelo de darsdbsor
+# Diagrama de modelo de darsdbsor
 
 ![ModelSOR](https://user-images.githubusercontent.com/62667937/196508785-8e936a82-2cd9-4f1e-a90f-235d5e868faf.png)
 
