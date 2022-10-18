@@ -1,8 +1,8 @@
 # DataWareHouse_Rueda
 
-En esta tarea se realizó el extract del proceso ETL de cada tabla de una bodega de datos (darsdbsor)
+En esta tarea se realizó el extract del proceso ETL de cada tabla de una dase de datos (darsdbsor)
 
-Creación de las bodegas de datos
+Creación de las bases de datos
 
 # darsdbsor
 
