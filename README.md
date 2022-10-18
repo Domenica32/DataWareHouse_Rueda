@@ -9,7 +9,7 @@ En esta tarea se realizó el extract del proceso ETL de cada tabla de una bodega
 ![image](https://user-images.githubusercontent.com/62667937/196506409-b51ca98b-ea77-48c5-bf78-2062c729a492.png)
 
 
-#darsdbstg
+# darsdbstg
 
 
 ![image](https://user-images.githubusercontent.com/62667937/196506707-f512a9b8-d507-4426-a8b8-a328217b6ffb.png)
@@ -18,7 +18,18 @@ En esta tarea se realizó el extract del proceso ETL de cada tabla de una bodega
 
 2. Proyecto en Visual Studio Code
 
-Para la extraccion de la infromación se creó un archivo .p para cada una de las tablas y así poder insertar los datos en la base de datos darsdbstg
+Se realizó la configuracion del archivo db_connection para conectarnos a la base de datos
+
+
+![image](https://user-images.githubusercontent.com/62667937/196507995-362ca919-2a73-419d-b98b-4e8c5247e3fe.png)
+
+
+Para la extraccion de la infromación se creó un archivo .py para cada una de las tablas y así poder insertar los datos en la base de datos darsdbstg
 
 
 ![image](https://user-images.githubusercontent.com/62667937/196507417-06af55b1-ad05-445e-bb1f-60df10bf1e74.png)
+
+
+
+
+
