@@ -25,7 +25,6 @@ La siguiente tarea consistió en realizar el proceso de transformación de todas
 
 ![image](https://user-images.githubusercontent.com/62667937/198377785-43286d62-90f0-4801-ba49-7aee089a3357.png)
 
-- Se agregó un archivo SubKey_FK el cuál nos ayuda a 
 
 - En cada load se utilizó la función merge de la librería de python pandas, que nos permite fucionar dos tablas en este caso la de stg y la del sor con el fin de que al hacer una nueva carga en el sor no se dupliquen datos y solo queden los últimos transformados.
 
