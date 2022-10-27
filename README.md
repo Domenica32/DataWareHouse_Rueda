@@ -5,4 +5,8 @@ La siguiente tarea consistió en realizar el proceso de transformación de todas
 
 * [Transform](#Transform)
 
+* [Load](#Load)
+
 ## :hammer:Transform
+
+## :check:Load
