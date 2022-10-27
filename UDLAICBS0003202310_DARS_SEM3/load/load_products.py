@@ -44,21 +44,23 @@ def load_products(codigoETL):
             raise Exception ("Error trying to connect to the b2b_dwh_sor")
       
         dim_product_dict = {
-            "prod_id" : [],
-            "prod_name" : [],
-            "prod_desc":[],
-            "prod_category" :[],
-            "prod_category_id": [],
-            "prod_category_desc":[],
-            "prod_weight_class":[],
-            "supplier_id":[],
-            "prod_status":[],
-            "prod_list_price":[],
-            "prod_min_price":[]
+            "PROD_ID" : [],
+            "PROD_NAME" : [],
+            "PROD_DESC":[],
+            "PROD_CATEGORY" :[],
+            "PROD_CATEGORY_ID": [],
+            "PROD_CATEGORY_DESC":[],
+            "PROD_WEIGHT_CLASS":[],
+            "SUPPLIER_ID":[],
+            "PROD_STATUS":[],
+            "PROD_LIST_PRICE":[],
+            "PROD_MIN_PRICE":[]
+
         }
         
         product_tra = pd.read_sql(f"SELECT PROD_ID, PROD_NAME, PROD_DESC, PROD_CATEGORY, PROD_CATEGORY_ID, PROD_CATEGORY_DESC, PROD_WEIGHT_CLASS,SUPPLIER_ID,PROD_STATUS, PROD_LIST_PRICE, PROD_MIN_PRICE  FROM products_tra where CODIGO_ETL={codigoETL}",ses_db_stg)
-
+        product_sor=pd.read_sql(f"SELECT PROD_ID, PROD_NAME, PROD_DESC, PROD_CATEGORY, PROD_CATEGORY_ID, PROD_CATEGORY_DESC, PROD_WEIGHT_CLASS,SUPPLIER_ID,PROD_STATUS, PROD_LIST_PRICE, PROD_MIN_PRICE FROM dim_products", ses_db_sor)
+        product_sor.to_dict()
         if not product_tra.empty:
             for id,name,prod_desc,cat,cat_id,desc,weight,supp_id,sta,list,min \
                 in zip(product_tra['PROD_ID'],product_tra['PROD_NAME'],
@@ -67,20 +69,21 @@ def load_products(codigoETL):
                 product_tra['PROD_WEIGHT_CLASS'],product_tra['SUPPLIER_ID'],
                 product_tra['PROD_STATUS'],product_tra['PROD_LIST_PRICE'],
                 product_tra['PROD_MIN_PRICE']):
-                dim_product_dict["prod_id"].append(id)
-                dim_product_dict["prod_name"].append(name)
-                dim_product_dict["prod_desc"].append(prod_desc)
-                dim_product_dict["prod_category"].append(cat)
-                dim_product_dict["prod_category_id"].append(cat_id)
-                dim_product_dict["prod_category_desc"].append(desc)
-                dim_product_dict["prod_weight_class"].append(weight)
-                dim_product_dict["supplier_id"].append(supp_id)
-                dim_product_dict["prod_status"].append(sta)
-                dim_product_dict["prod_list_price"].append(list)
-                dim_product_dict["prod_min_price"].append(min)
-        if dim_product_dict ["prod_id"]:
+                dim_product_dict["PROD_ID"].append(id)
+                dim_product_dict["PROD_NAME"].append(name)
+                dim_product_dict["PROD_DESC"].append(prod_desc)
+                dim_product_dict["PROD_CATEGORY"].append(cat)
+                dim_product_dict["PROD_CATEGORY_ID"].append(cat_id)
+                dim_product_dict["PROD_CATEGORY_DESC"].append(desc)
+                dim_product_dict["PROD_WEIGHT_CLASS"].append(weight)
+                dim_product_dict["SUPPLIER_ID"].append(supp_id)
+                dim_product_dict["PROD_STATUS"].append(sta)
+                dim_product_dict["PROD_LIST_PRICE"].append(list)
+                dim_product_dict["PROD_MIN_PRICE"].append(min)
+        if dim_product_dict ["PROD_ID"]:
             df_dim_product = pd.DataFrame(dim_product_dict)
-            df_dim_product.to_sql('dim_products', ses_db_sor, if_exists='append',index=False)
+            merge_product= df_dim_product.merge(product_sor, indicator='i', how='outer').query('i == "left_only"').drop('i', axis=1)            
+            merge_product.to_sql('dim_products', ses_db_sor, if_exists="append",index=False) 
     except:
         traceback.print_exc()
     finally:

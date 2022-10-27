@@ -44,26 +44,29 @@ def load_channels(codigoETL):
       
 
         dim_channel_dict = {
-            "channel_id" : [],
-            "channel_desc" : [],
-            "channel_class" :[],
-            "channel_class_id": []
+            "CHANNEL_ID" : [],
+            "CHANNEL_DESC" : [],
+            "CHANNEL_CLASS" :[],
+            "CHANNEL_CLASS_ID": []
         }
         channel_tra = pd.read_sql(f"SELECT CHANNEL_ID, CHANNEL_DESC, CHANNEL_CLASS, CHANNEL_CLASS_ID FROM channels_tra where CODIGO_ETL={codigoETL} ", ses_db_stg)
-        
+        channel_sor=pd.read_sql(f"SELECT CHANNEL_ID, CHANNEL_DESC, CHANNEL_CLASS, CHANNEL_CLASS_ID FROM dim_channels", ses_db_sor)
+        channel_sor.to_dict()
         if not channel_tra.empty:
             for id,des,cla,cla_id \
                 in zip(channel_tra['CHANNEL_ID'],channel_tra['CHANNEL_DESC'],
                 channel_tra['CHANNEL_CLASS'],channel_tra['CHANNEL_CLASS_ID']):
-                dim_channel_dict["channel_id"].append(id)
-                dim_channel_dict["channel_desc"].append(des)
-                dim_channel_dict["channel_class"].append(cla)
-                dim_channel_dict["channel_class_id"].append(cla_id)
+                dim_channel_dict["CHANNEL_ID"].append(id)
+                dim_channel_dict["CHANNEL_DESC"].append(des)
+                dim_channel_dict["CHANNEL_CLASS"].append(cla)
+                dim_channel_dict["CHANNEL_CLASS_ID"].append(cla_id)
 
 
-        if dim_channel_dict ["channel_id"]:
+        if dim_channel_dict ["CHANNEL_ID"]:
             df_dim_channels = pd.DataFrame(dim_channel_dict)
-            df_dim_channels.to_sql('dim_channels', ses_db_sor, if_exists='append',index=False)
+            merge_channel = df_dim_channels.merge(channel_sor, indicator='i', how='outer').query('i == "left_only"').drop('i', axis=1)
+            merge_channel.to_sql('dim_channels', ses_db_sor, if_exists="append",index=False)
+
     except:
         traceback.print_exc()
     finally:

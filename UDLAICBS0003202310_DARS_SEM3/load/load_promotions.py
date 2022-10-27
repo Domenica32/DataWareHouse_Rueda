@@ -44,28 +44,31 @@ def load_promotions(codigoETL):
             raise Exception ("Error trying to connect to the b2b_dwh_sor")
       
         dim_promo_dict = {
-           "promo_id" : [],
-            "promo_name" : [],
-            "promo_cost" :[],
-            "promo_begin_date": [],
-            "promo_end_date":[]
+           "PROMO_ID" : [],
+            "PROMO_NAME" : [],
+            "PROMO_COST" :[],
+            "PROMO_BEGIN_DATE": [],
+            "PROMO_END_DATE":[]
+
         }
         
         promo_tra = pd.read_sql(f"SELECT PROMO_ID, PROMO_NAME, PROMO_COST, PROMO_BEGIN_DATE, PROMO_END_DATE  FROM promotions_tra where CODIGO_ETL={codigoETL}",ses_db_stg)
-
+        promo_sor=pd.read_sql(f"SELECT PROMO_ID, PROMO_NAME, PROMO_COST, PROMO_BEGIN_DATE, PROMO_END_DATE FROM dim_promotions", ses_db_sor)
+        promo_sor.to_dict()
         if not promo_tra.empty:
             for id,name,cost,begin,end \
                 in zip(promo_tra['PROMO_ID'],promo_tra['PROMO_NAME'],
                 promo_tra['PROMO_COST'],promo_tra['PROMO_BEGIN_DATE'],
                 promo_tra['PROMO_END_DATE']):
-                dim_promo_dict["promo_id"].append(id)
-                dim_promo_dict["promo_name"].append(name)
-                dim_promo_dict["promo_cost"].append(cost)
-                dim_promo_dict["promo_begin_date"].append(begin)
-                dim_promo_dict["promo_end_date"].append(end)
-        if dim_promo_dict ["promo_id"]:
+                dim_promo_dict["PROMO_ID"].append(id)
+                dim_promo_dict["PROMO_NAME"].append(name)
+                dim_promo_dict["PROMO_COST"].append(cost)
+                dim_promo_dict["PROMO_BEGIN_DATE"].append(begin)
+                dim_promo_dict["PROMO_END_DATE"].append(end)
+        if dim_promo_dict ["PROMO_ID"]:
             df_dim_promo = pd.DataFrame(dim_promo_dict)
-            df_dim_promo.to_sql('dim_promotions', ses_db_sor, if_exists='append',index=False)
+            merge_promo= df_dim_promo.merge(promo_sor, indicator='i', how='outer').query('i == "left_only"').drop('i', axis=1)            
+            merge_promo.to_sql('dim_promotions', ses_db_sor, if_exists="append",index=False) 
     except:
         traceback.print_exc()
     finally:

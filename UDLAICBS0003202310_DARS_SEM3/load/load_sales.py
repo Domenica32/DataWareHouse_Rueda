@@ -2,6 +2,7 @@ from distutils.util import execute
 from util.db_connection import Db_Connection
 import pandas as pd
 import traceback
+from load.subKey_FK import *
 
 import configparser
 
@@ -54,6 +55,10 @@ def load_sales(codigoETL):
         }
         
         sales_tra = pd.read_sql(f"SELECT PROD_ID, CUST_ID, TIME_ID, CHANNEL_ID, PROMO_ID,QUANTITY_SOLD, AMOUNT_SOLD   FROM sales_tra where CODIGO_ETL={codigoETL}",ses_db_stg)
+        promo_data=pd.read_sql(f"SELECT ID,PROMO_ID FROM dim_promotions", ses_db_sor)
+        customer_data=pd.read_sql(f"SELECT ID,CUST_ID FROM dim_customers", ses_db_sor)
+        channel_data=pd.read_sql(f"SELECT ID,CHANNEL_ID FROM dim_channels", ses_db_sor)
+        product_data=pd.read_sql(f"SELECT ID,PROD_ID FROM dim_products", ses_db_sor)
 
         if not sales_tra.empty:
             for prod,cust,time,channel,promo,quan,amou \
@@ -62,11 +67,11 @@ def load_sales(codigoETL):
                 sales_tra["PROMO_ID"],sales_tra["QUANTITY_SOLD"],
                 sales_tra["AMOUNT_SOLD"]):
 
-                dim_sales_dict["prod_id"].append(prod)
-                dim_sales_dict["cust_id"].append(cust)
+                dim_sales_dict["prod_id"].append(product_subKey(prod,product_data))
+                dim_sales_dict["cust_id"].append(customer_subKey(cust,customer_data))
                 dim_sales_dict["time_id"].append(time)
-                dim_sales_dict["channel_id"].append(channel)
-                dim_sales_dict["promo_id"].append(promo)
+                dim_sales_dict["channel_id"].append(channel_subKey (channel,channel_data))
+                dim_sales_dict["promo_id"].append(promo_subKey(promo,promo_data))
                 dim_sales_dict["quantity_sold"].append(quan)
                 dim_sales_dict["amount_sold"].append(amou)
         if dim_sales_dict ["prod_id"]:

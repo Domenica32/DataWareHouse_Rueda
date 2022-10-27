@@ -44,38 +44,41 @@ def load_time(codigoETL):
             raise Exception ("Error trying to connect to the b2b_dwh_sor")
       
         dim_time_dict = {
-            "time_id" : [],
-            "day_name" : [],
-            "day_number_in_week" :[],
-            "day_number_in_month": [],
-            "calendar_week_number":[],
-            "calendar_month_number":[],
-            "calendar_month_desc":[],
-            "end_of_cal_month":[],
-            "calendar_quarter_desc":[],
-            "calendar_year":[]
+            "TIME_ID" : [],
+            "DAY_NAME" : [],
+            "DAY_NUMBER_IN_WEEK" :[],
+            "DAY_NUMBER_IN_MONTH": [],
+            "CALENDAR_WEEK_NUMBER":[],
+            "CALENDAR_MONTH_NUMBER":[],
+            "CALENDAR_MONTH_DESC":[],
+            "END_OF_CAL_MONTH":[],
+            "CALENDAR_QUARTER_DESC":[],
+            "CALENDAR_YEAR":[]
+
         }
         time_tra = pd.read_sql(f"SELECT TIME_ID,DAY_NAME, DAY_NUMBER_IN_WEEK, DAY_NUMBER_IN_MONTH,CALENDAR_WEEK_NUMBER, CALENDAR_MONTH_NUMBER, CALENDAR_MONTH_DESC, END_OF_CAL_MONTH, CALENDAR_QUARTER_DESC, CALENDAR_YEAR  FROM times_tra where CODIGO_ETL={codigoETL}",ses_db_stg)
-
+        times_sor=pd.read_sql(f"SELECT TIME_ID,DAY_NAME, DAY_NUMBER_IN_WEEK, DAY_NUMBER_IN_MONTH,CALENDAR_WEEK_NUMBER, CALENDAR_MONTH_NUMBER, CALENDAR_MONTH_DESC, END_OF_CAL_MONTH, CALENDAR_QUARTER_DESC, CALENDAR_YEAR FROM dim_times", ses_db_sor)
+        times_sor.to_dict()
         if not time_tra.empty:
             for id,name,numWeek,numMonth,calWeek,calMonth,calDesc,end,quarter,year \
                 in zip(time_tra['TIME_ID'],time_tra['DAY_NAME'],
                 time_tra['DAY_NUMBER_IN_WEEK'],time_tra['DAY_NUMBER_IN_MONTH'],time_tra["CALENDAR_WEEK_NUMBER"],
                 time_tra["CALENDAR_MONTH_NUMBER"],time_tra["CALENDAR_MONTH_DESC"],
                 time_tra["END_OF_CAL_MONTH"],time_tra["CALENDAR_QUARTER_DESC"],time_tra["CALENDAR_YEAR"]):
-                dim_time_dict["time_id"].append( id)
-                dim_time_dict["day_name"].append(name)
-                dim_time_dict["day_number_in_week"].append(numWeek)
-                dim_time_dict["day_number_in_month"].append(numMonth)
-                dim_time_dict["calendar_week_number"].append(calWeek)
-                dim_time_dict["calendar_month_number"].append(calMonth)
-                dim_time_dict["calendar_month_desc"].append(calDesc)
-                dim_time_dict["end_of_cal_month"].append(end)
-                dim_time_dict["calendar_quarter_desc"].append(quarter)
-                dim_time_dict["calendar_year"].append(year)
-        if dim_time_dict ["time_id"]:
+                dim_time_dict["TIME_ID"].append( id)
+                dim_time_dict["DAY_NAME"].append(name)
+                dim_time_dict["DAY_NUMBER_IN_WEEK"].append(numWeek)
+                dim_time_dict["DAY_NUMBER_IN_MONTH"].append(numMonth)
+                dim_time_dict["CALENDAR_WEEK_NUMBER"].append(calWeek)
+                dim_time_dict["CALENDAR_MONTH_NUMBER"].append(calMonth)
+                dim_time_dict["CALENDAR_MONTH_DESC"].append(calDesc)
+                dim_time_dict["END_OF_CAL_MONTH"].append(end)
+                dim_time_dict["CALENDAR_QUARTER_DESC"].append(quarter)
+                dim_time_dict["CALENDAR_YEAR"].append(year)
+        if dim_time_dict ["TIME_ID"]:
             df_dim_time = pd.DataFrame(dim_time_dict)
-            df_dim_time.to_sql('dim_times', ses_db_sor, if_exists='append',index=False)
+            merge_times= df_dim_time.merge(times_sor, indicator='i', how='outer').query('i == "left_only"').drop('i', axis=1)            
+            merge_times.to_sql('dim_times', ses_db_sor, if_exists="append",index=False)   
     except:
         traceback.print_exc()
     finally:

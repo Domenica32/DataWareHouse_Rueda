@@ -41,7 +41,7 @@ try:
         # ext_sales()
         # ext_time()
    # TRANSFORMS 
-        # channels_tra(codigoETL)
+        #channels_tra(codigoETL)
         # countries_tra(codigoETL)
         # customers_tra(codigoETL)
         # products_tra(codigoETL)
@@ -51,12 +51,12 @@ try:
         
    #LOADS
         #load_channels(codigoETL)
-        #load_countries(1)
-        #load_customers(codigoETL) -- valio shit
-        #load_products(1)
-        #load_promotions(1)
-        #load_sales(codigoETL) --valio shit x2
-        load_time(1)
+        #load_countries(codigoETL)
+        #load_customers(codigoETL)
+        # load_products(codigoETL)
+        # load_promotions(codigoETL)
+         load_sales(8)
+        # load_time(codigoETL)
 
 except:
     traceback.print_exc()

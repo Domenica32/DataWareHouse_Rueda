@@ -44,25 +44,27 @@ def load_countries(codigoETL):
             raise Exception ("Error trying to connect to the b2b_dwh_sor")
       
         dim_country_dict = {
-            "country_id" : [],
-            "country_name" : [],
-            "country_region" :[],
-            "country_region_id": []
+            "COUNTRY_ID" : [],
+            "COUNTRY_NAME" : [],
+            "COUNTRY_REGION" :[],
+            "COUNTRY_REGION_ID": []
         }
         
         country_tra = pd.read_sql(f"SELECT COUNTRY_ID, COUNTRY_NAME , COUNTRY_REGION, COUNTRY_REGION_ID FROM countries_tra where CODIGO_ETL={codigoETL}",ses_db_stg)
-
+        country_sor=pd.read_sql(f"SELECT COUNTRY_ID, COUNTRY_NAME , COUNTRY_REGION, COUNTRY_REGION_ID FROM dim_countries", ses_db_sor)
+        country_sor.to_dict()
         if not country_tra.empty:
             for id,name,region,coun_id \
                 in zip(country_tra['COUNTRY_ID'],country_tra['COUNTRY_NAME'],
                 country_tra['COUNTRY_REGION'],country_tra['COUNTRY_REGION_ID']):
-                dim_country_dict["country_id"].append(id)
-                dim_country_dict["country_name"].append(name)
-                dim_country_dict["country_region"].append(region)
-                dim_country_dict["country_region_id"].append(coun_id)
-        if dim_country_dict ["country_id"]:
+                dim_country_dict["COUNTRY_ID"].append(id)
+                dim_country_dict["COUNTRY_NAME"].append(name)
+                dim_country_dict["COUNTRY_REGION"].append(region)
+                dim_country_dict["COUNTRY_REGION_ID"].append(coun_id)
+        if dim_country_dict ["COUNTRY_ID"]:
             df_dim_countries = pd.DataFrame(dim_country_dict)
-            df_dim_countries.to_sql('dim_countries', ses_db_sor, if_exists='append',index=False)
+            merge_country = df_dim_countries.merge(country_sor, indicator='i', how='outer').query('i == "left_only"').drop('i', axis=1)            
+            merge_country.to_sql('dim_countries', ses_db_sor, if_exists="append",index=False)
     except:
         traceback.print_exc()
     finally:
