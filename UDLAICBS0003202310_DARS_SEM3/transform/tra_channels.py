@@ -28,7 +28,7 @@ def channels_tra(codigoETL):
         # Dictionary for values of channels_ext
         channel_dict = {
             "channel_id" : [],
-            "codigo_etl_id":[],
+            "codigo_etl":[],
             "channel_desc" : [],
             "channel_class" :[],
             "channel_class_id": []

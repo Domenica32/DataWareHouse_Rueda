@@ -51,7 +51,7 @@ def time_tra(codigoETL):
                 time_ext["CALENDAR_MONTH_NUMBER"],time_ext["CALENDAR_MONTH_DESC"],
                 time_ext["END_OF_CAL_MONTH"],time_ext["CALENDAR_QUARTER_DESC"],time_ext["CALENDAR_YEAR"]):
                 time_dict["codigo_etl"].append(codigoETL)
-                time_dict["time_id"].append(month_date_numeric(id))
+                time_dict["time_id"].append( date_numeric(id))
                 time_dict["day_name"].append(name)
                 time_dict["day_number_in_week"].append(numWeek)
                 time_dict["day_number_in_month"].append(numMonth)

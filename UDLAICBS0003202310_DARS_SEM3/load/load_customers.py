@@ -27,7 +27,7 @@ pwd = confParam_sor ['MySqlParameters']['pwd']
 dbSor = confParam_sor ['MySqlParameters']['dbSor']
 con_db_sor = Db_Connection(type, host, port, user, pwd, dbSor)
 
-def load_countries(codigoETL):
+def load_customers(codigoETL):
     try:
     
         ses_db_stg = con_db_stg.start()
@@ -43,10 +43,10 @@ def load_countries(codigoETL):
         elif ses_db_sor == -2:
             raise Exception ("Error trying to connect to the b2b_dwh_sor")
       
-        dim_country_dict = {
+        dim_customers_dict = {
             "cust_id" : [],
             "cust_complete_name":[], 
-            "cust_gen_tra":[],
+            "cust_gender":[],
             "cust_year_of_birth":[],
             "cust_marital_status": [],
             "cust_street_address":[],
@@ -60,20 +60,36 @@ def load_countries(codigoETL):
             "cust_email":[]
         }
         
-        customers_tra = pd.read_sql("SELECT COUNTRY_ID, COUNTRY_NAME , COUNTRY_REGION, COUNTRY_REGION_ID FROM countries_tra",ses_db_stg)
-        customers_ext = pd.read_sql("SELECT CUST_ID, CUST_COMPLETE_NAME, CUST_GENDER_TRA, CUST_YEAR_OF_BIRTH, CUST_MARITAL_STATUS, CUST_STREET_ADDRESS,CUST_POSTAL_CODE, CUST_CITY, CUST_STATE_PROVINCE, COUNTRY_ID, CUST_MAIN_PHONE_NUMBER, CUST_INCOME_LEVEL, CUST_CREDIT_LIMIT, CUST_EMAIL  FROM customers_ext",ses_db_stg)
+        customers_tra = pd.read_sql(f"SELECT CUST_ID, CUST_COMPLETE_NAME, CUST_GEN_TRA, CUST_YEAR_OF_BIRTH, CUST_MARITAL_STATUS,\
+        CUST_STREET_ADDRESS,CUST_POSTAL_CODE, CUST_CITY, CUST_STATE_PROVINCE, COUNTRY_ID, CUST_MAIN_PHONE_NUMBER, CUST_INCOME_LEVEL,\
+        CUST_CREDIT_LIMIT, CUST_EMAIL  FROM customers_tra where CODIGO_ETL={codigoETL}",ses_db_stg)
 
-        if not country_tra.empty:
-            for id,name,region,coun_id \
-                in zip(country_tra['COUNTRY_ID'],country_tra['COUNTRY_NAME'],
-                country_tra['COUNTRY_REGION'],country_tra['COUNTRY_REGION_ID']):
-                dim_country_dict["country_id"].append(id)
-                dim_country_dict["country_name"].append(name)
-                dim_country_dict["country_region"].append(region)
-                dim_country_dict["country_region_id"].append(coun_id)
-        if dim_country_dict ["country_id"]:
-            df_dim_countries = pd.DataFrame(dim_country_dict)
-            df_dim_countries.to_sql('dim_countries', ses_db_sor, if_exists='append',index=False)
+        if not customers_tra.empty:
+            for id,name,gen,birth,status,address,postal,city,province,coun_id,phone,level,credit,email \
+                in zip(customers_tra['CUST_ID'], customers_tra['CUST_COMPLETE_NAME'],customers_tra['CUST_GEN_TRA'],
+                customers_tra['CUST_YEAR_OF_BIRTH'],customers_tra['CUST_MARITAL_STATUS'],
+                customers_tra['CUST_STREET_ADDRESS'],customers_tra['CUST_POSTAL_CODE'],
+                customers_tra['CUST_CITY'],customers_tra['CUST_STATE_PROVINCE'],
+                customers_tra['COUNTRY_ID'],customers_tra['CUST_MAIN_PHONE_NUMBER'],
+                customers_tra['CUST_INCOME_LEVEL'],customers_tra['CUST_CREDIT_LIMIT'],
+                customers_tra['CUST_EMAIL']):
+                dim_customers_dict["cust_id"].append(id)
+                dim_customers_dict["cust_complete_name"].append(name)
+                dim_customers_dict["cust_gender"].append(gen)
+                dim_customers_dict["cust_year_of_birth"].append(birth)
+                dim_customers_dict["cust_marital_status"].append(status)
+                dim_customers_dict["cust_street_address"].append(address)
+                dim_customers_dict["cust_postal_code"].append(postal)
+                dim_customers_dict["cust_city"].append(city)
+                dim_customers_dict["cust_state_province"].append(province)
+                dim_customers_dict["country_id"].append(coun_id)
+                dim_customers_dict["cust_main_phone_number"].append(phone)
+                dim_customers_dict["cust_income_level"].append(level)
+                dim_customers_dict["cust_credit_limit"].append(credit)
+                dim_customers_dict["cust_email"].append(email)
+        if dim_customers_dict ["cust_id"]:
+            df_dim_customers = pd.DataFrame(dim_customers_dict)
+            df_dim_customers.to_sql('dim_customers', ses_db_sor, if_exists='append',index=False)
     except:
         traceback.print_exc()
     finally:

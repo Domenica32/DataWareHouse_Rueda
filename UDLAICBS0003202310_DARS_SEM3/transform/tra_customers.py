@@ -49,7 +49,9 @@ def customers_tra(codigoETL):
             "cust_email":[]
         }
          # Reading de extract customers from de sql table
-        customers_ext = pd.read_sql("SELECT CUST_ID, CUST_FIRST_NAME, CUST_LAST_NAME, CUST_GENDER, CUST_YEAR_OF_BIRTH, CUST_MARITAL_STATUS, CUST_STREET_ADDRESS,CUST_POSTAL_CODE, CUST_CITY, CUST_STATE_PROVINCE, COUNTRY_ID, CUST_MAIN_PHONE_NUMBER, CUST_INCOME_LEVEL, CUST_CREDIT_LIMIT, CUST_EMAIL  FROM customers_ext",ses_db_stg)
+        customers_ext = pd.read_sql("SELECT CUST_ID, CUST_FIRST_NAME, CUST_LAST_NAME, CUST_GENDER, CUST_YEAR_OF_BIRTH,\
+             CUST_MARITAL_STATUS, CUST_STREET_ADDRESS,CUST_POSTAL_CODE, CUST_CITY, CUST_STATE_PROVINCE, COUNTRY_ID,\
+             CUST_MAIN_PHONE_NUMBER, CUST_INCOME_LEVEL, CUST_CREDIT_LIMIT, CUST_EMAIL  FROM customers_ext",ses_db_stg)
         #Processing the sql  content
         if not customers_ext.empty:
             for id,first,last,gen,birth,status,address,postal,city,province,coun_id,phone,level,credit,email \

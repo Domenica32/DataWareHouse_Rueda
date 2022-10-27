@@ -62,7 +62,7 @@ def load_channels(codigoETL):
 
 
         if dim_channel_dict ["channel_id"]:
-            df_dim_channels = pd.DataFrame(dim_channel_dic)
+            df_dim_channels = pd.DataFrame(dim_channel_dict)
             df_dim_channels.to_sql('dim_channels', ses_db_sor, if_exists='append',index=False)
     except:
         traceback.print_exc()

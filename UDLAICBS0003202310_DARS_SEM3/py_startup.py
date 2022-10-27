@@ -19,35 +19,44 @@ from transform.tra_sales import  sales_tra
 from transform.tra_time import  time_tra
 from load.load_channels import load_channels
 from load.load_countries import load_countries
+from load.load_customers import load_customers
+from load.load_products import load_products
+from load.load_promotions import load_promotions
+from load.load_sales import load_sales
+from load.load_time import load_time
 
 
 
 
 
-codigoETL=proceso_etl()
+
+#codigoETL=proceso_etl()
 try:
     # EXTRACTS
-        #ext_channels()
-        #ext_countries()
-        #ext_customers()
-        #ext_products()
-        #ext_promo()
-        #ext_sales()
-        #ext_time()
+        # ext_channels()
+        # ext_countries()
+        # ext_customers()
+        # ext_products()
+        # ext_promo()
+        # ext_sales()
+        # ext_time()
    # TRANSFORMS 
-        #channels_tra(codigoETL)
-        #countries_tra(codigoETL)
-        #customers_tra(codigoETL)
-        #products_tra(codigoETL)
-        #promo_tra(codigoETL)
-        #sales_tra(codigoETL)
-        #time_tra(codigoETL)
+        # channels_tra(codigoETL)
+        # countries_tra(codigoETL)
+        # customers_tra(codigoETL)
+        # products_tra(codigoETL)
+        # promo_tra(codigoETL)
+        # sales_tra(codigoETL)
+        # time_tra(codigoETL)
+        
    #LOADS
         #load_channels(codigoETL)
-        load_countries(codigoETL)
-
-
-
+        #load_countries(1)
+        #load_customers(codigoETL) -- valio shit
+        #load_products(1)
+        #load_promotions(1)
+        #load_sales(codigoETL) --valio shit x2
+        load_time(1)
 
 except:
     traceback.print_exc()

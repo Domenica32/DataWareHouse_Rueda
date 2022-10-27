@@ -27,7 +27,7 @@ pwd = confParam_sor ['MySqlParameters']['pwd']
 dbSor = confParam_sor ['MySqlParameters']['dbSor']
 con_db_sor = Db_Connection(type, host, port, user, pwd, dbSor)
 
-def load_countries(codigoETL):
+def load_sales(codigoETL):
     try:
     
         ses_db_stg = con_db_stg.start()
@@ -43,26 +43,35 @@ def load_countries(codigoETL):
         elif ses_db_sor == -2:
             raise Exception ("Error trying to connect to the b2b_dwh_sor")
       
-        dim_country_dict = {
-            "country_id" : [],
-            "country_name" : [],
-            "country_region" :[],
-            "country_region_id": []
+        dim_sales_dict = {
+            "prod_id" : [],
+            "cust_id" : [],
+            "time_id" :[],
+            "channel_id": [],
+            "promo_id":[],
+            "quantity_sold":[],
+            "amount_sold":[]
         }
         
-        country_tra = pd.read_sql(f"SELECT COUNTRY_ID, COUNTRY_NAME , COUNTRY_REGION, COUNTRY_REGION_ID FROM countries_tra where CODIGO_ETL={codigoETL}",ses_db_stg)
+        sales_tra = pd.read_sql(f"SELECT PROD_ID, CUST_ID, TIME_ID, CHANNEL_ID, PROMO_ID,QUANTITY_SOLD, AMOUNT_SOLD   FROM sales_tra where CODIGO_ETL={codigoETL}",ses_db_stg)
 
-        if not country_tra.empty:
-            for id,name,region,coun_id \
-                in zip(country_tra['COUNTRY_ID'],country_tra['COUNTRY_NAME'],
-                country_tra['COUNTRY_REGION'],country_tra['COUNTRY_REGION_ID']):
-                dim_country_dict["country_id"].append(id)
-                dim_country_dict["country_name"].append(name)
-                dim_country_dict["country_region"].append(region)
-                dim_country_dict["country_region_id"].append(coun_id)
-        if dim_country_dict ["country_id"]:
-            df_dim_countries = pd.DataFrame(dim_country_dict)
-            df_dim_countries.to_sql('dim_countries', ses_db_sor, if_exists='append',index=False)
+        if not sales_tra.empty:
+            for prod,cust,time,channel,promo,quan,amou \
+                in zip(sales_tra['PROD_ID'],sales_tra['CUST_ID'],
+                sales_tra['TIME_ID'],sales_tra['CHANNEL_ID'],
+                sales_tra["PROMO_ID"],sales_tra["QUANTITY_SOLD"],
+                sales_tra["AMOUNT_SOLD"]):
+
+                dim_sales_dict["prod_id"].append(prod)
+                dim_sales_dict["cust_id"].append(cust)
+                dim_sales_dict["time_id"].append(time)
+                dim_sales_dict["channel_id"].append(channel)
+                dim_sales_dict["promo_id"].append(promo)
+                dim_sales_dict["quantity_sold"].append(quan)
+                dim_sales_dict["amount_sold"].append(amou)
+        if dim_sales_dict ["prod_id"]:
+            df_dim_sales = pd.DataFrame(dim_sales_dict)
+            df_dim_sales.to_sql('dim_sales', ses_db_sor, if_exists='append',index=False)
     except:
         traceback.print_exc()
     finally:

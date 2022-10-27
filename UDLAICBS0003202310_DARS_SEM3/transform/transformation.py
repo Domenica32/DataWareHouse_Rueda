@@ -26,3 +26,12 @@ def date_numeric(fecha_str):
     fecha_date = datetime.strptime(fecha_str, '%d-%b-%y')
     fecha_numerica= int(fecha_date.strftime("%d%m%y"))
     return (fecha_numerica)
+
+def mapeoCountries(countrie_id, countriesor):
+        
+        arreglo=dict()
+        if not countriesor.empty:
+            for id,cou_id \
+                in zip(countriesor['ID'],countriesor['COUNTRY_ID']):
+                arreglo[cou_id] = id
+        return arreglo[countrie_id]
