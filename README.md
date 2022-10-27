@@ -9,4 +9,4 @@ La siguiente tarea consistió en realizar el proceso de transformación de todas
 
 ## :hammer:Transform
 
-## :check:Load
+## :white_check_mark:Load
